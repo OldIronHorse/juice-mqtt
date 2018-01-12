@@ -24,9 +24,7 @@ player_commands = {
 
 def onMQTTMsg(client,userdate,msg):
   payload = msg.payload.decode("utf-8")
-  print('MQTTMsg:', msg.topic, payload)
   topic = msg.topic.split('/')
-  print(topic)
   if('command' == topic[-1]):
     player_id = topic[-2]
     server = juice.connect('euterpe3', 9090)
@@ -38,12 +36,6 @@ def onMQTTMsg(client,userdate,msg):
 def onSBMsg(msg):
   #print('SBMsg: ####' )
   player = msg['player']
-  #print('onSBMsg:', player['name'], 
-                    #player['mode'], 
-                    #player.get('current_title', None), 
-                    #player['playlist'][0],
-                    #player['playlist'],
-                    #player.keys())
   track = player['playlist'][0]
   status = {
       'id': player['id'],
@@ -54,6 +46,7 @@ def onSBMsg(msg):
       'artist': track['artist'],
       'title': player.get('current_title', None), 
       'volume': player['volume'],
+      'playlist': player['playlist'],
   }
   last_status[player['name']] = status
   client.publish('squeezebox/players/' + player['name'],
