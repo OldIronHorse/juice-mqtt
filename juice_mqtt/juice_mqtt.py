@@ -20,6 +20,8 @@ player_commands = {
   'pause': juice.pause,
   'volume_dec': partial(juice.set_player_volume, vol='-2'),
   'volume_inc': partial(juice.set_player_volume, vol='+2'),
+  'track_next': juice.next_track,
+  'track_previous': juice.previous_track,
 }
 
 def onMQTTMsg(client,userdate,msg):
@@ -34,7 +36,8 @@ def onMQTTMsg(client,userdate,msg):
     actions[noun][verb](msg)
 
 def onSBMsg(msg):
-  #print('SBMsg: ####' )
+  print('SBMsg: ####' )
+  print(msg)
   player = msg['player']
   track = player['playlist'][0]
   status = {
@@ -43,7 +46,7 @@ def onSBMsg(msg):
       'mode': player['mode'],
       'track': track['title'],
       'album': track.get('album', None),
-      'artist': track['artist'],
+      'artist': track.get('artist', None),
       'title': player.get('current_title', None), 
       'volume': player['volume'],
       'playlist': player['playlist'],
