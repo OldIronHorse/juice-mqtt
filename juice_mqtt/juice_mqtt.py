@@ -39,7 +39,7 @@ def onSBMsg(msg):
   print('SBMsg: ####' )
   print(msg)
   player = msg['player']
-  track = player['playlist'][0]
+  track = player['playlist'][player['playlist_cur_index']]
   status = {
       'id': player['id'],
       'name': player['name'],
@@ -50,6 +50,7 @@ def onSBMsg(msg):
       'title': player.get('current_title', None), 
       'volume': player['volume'],
       'playlist': player['playlist'],
+      'playlist_current_index': player['playlist_cur_index'],
   }
   last_status[player['name']] = status
   client.publish('squeezebox/players/' + player['name'],
@@ -66,5 +67,5 @@ if __name__ == '__main__':
   server = juice.connect('euterpe3', 9090)
   players = juice.get_players(server)
   for player in players:
-    server.write(msg_format.player_status(player.id, subscribe=0).encode('ascii'))
+    server.write(msg_format.player_status(player['id'], subscribe=0, start=0, page_size=9999).encode('ascii'))
   juice.loop_start(server, onSBMsg)
