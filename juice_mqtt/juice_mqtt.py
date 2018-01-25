@@ -39,18 +39,21 @@ def onSBMsg(msg):
   print('SBMsg: ####' )
   print(msg)
   player = msg['player']
-  track = player['playlist'][player['playlist_cur_index']]
+  try:
+    track = player['playlist'][player['playlist_cur_index']]
+  except KeyError:
+    track = {}
   status = {
       'id': player['id'],
       'name': player['name'],
       'mode': player['mode'],
-      'track': track['title'],
+      'track': track.get('title', None),
       'album': track.get('album', None),
       'artist': track.get('artist', None),
       'title': player.get('current_title', None), 
       'volume': player['volume'],
       'playlist': player['playlist'],
-      'playlist_current_index': player['playlist_cur_index'],
+      'playlist_current_index': player.get('playlist_cur_index', None)
   }
   last_status[player['name']] = status
   client.publish('squeezebox/players/' + player['name'],
