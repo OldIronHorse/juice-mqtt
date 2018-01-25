@@ -25,8 +25,10 @@ player_commands = {
 }
 
 def onMQTTMsg(client,userdate,msg):
+  print('MQTTMsg: ####' )
   payload = msg.payload.decode("utf-8")
   topic = msg.topic.split('/')
+  print(msg.topic, payload)
   if('command' == topic[-1]):
     player_id = topic[-2]
     server = juice.connect('euterpe3', 9090)
@@ -49,7 +51,9 @@ def onSBMsg(msg):
       'mode': player['mode'],
       'track': track.get('title', None),
       'album': track.get('album', None),
+      'album_id': track.get('album_id', None),
       'artist': track.get('artist', None),
+      'artist_id': track.get('artist_id', None),
       'title': player.get('current_title', None), 
       'volume': player['volume'],
       'playlist': player['playlist'],
