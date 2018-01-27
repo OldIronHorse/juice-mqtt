@@ -9,6 +9,7 @@ last_status = {}
 
 def get_players(msg):
   for name in last_status.keys():
+    print('get_players', name, last_status[name])
     client.publish('squeezebox/players/' + name, json.dumps(last_status[name]))
 
 actions = {
