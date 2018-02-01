@@ -16,15 +16,6 @@ actions = {
   'players': {'get': get_players}
 }
 
-player_commands = {
-  'play': juice.play,
-  'pause': juice.pause,
-  'volume_dec': partial(juice.set_player_volume, vol='-2'),
-  'volume_inc': partial(juice.set_player_volume, vol='+2'),
-  'track_next': juice.next_track,
-  'track_previous': juice.previous_track,
-}
-
 def onMQTTMsg(client,userdate,msg):
   print('MQTTMsg: ####' )
   payload = msg.payload.decode("utf-8")
@@ -71,7 +62,6 @@ if __name__ == '__main__':
   #client.on_log = lambda client,ussrdata,level,buf: print("log:",level,buf)
   client.loop_start()
   client.subscribe("squeezebox/players-get")
-  client.subscribe("squeezebox/players/+/command")
   server = juice.connect('euterpe3', 9090)
   players = juice.get_players(server)
   for player in players:
