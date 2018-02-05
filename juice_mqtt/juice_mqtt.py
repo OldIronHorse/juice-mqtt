@@ -49,7 +49,7 @@ def onSBMsg(msg):
       'title': player.get('current_title', None), 
       'volume': player['volume'],
       'playlist': player['playlist'],
-      'playlist_current_index': player.get('playlist_cur_index', None)
+      'playlist_cur_index': player.get('playlist_cur_index', None)
   }
   last_status[player['name']] = status
   client.publish('squeezebox/players/' + player['name'],
