@@ -7,27 +7,20 @@ import juice.message.format as msg_format
 
 last_status = {}
 
-def get_players(msg):
-  for name in last_status.keys():
-    print('get_players', name, last_status[name])
-    client.publish('squeezebox/players/' + name, json.dumps(last_status[name]))
-
-actions = {
-  'players': {'get': get_players}
-}
 
 def onMQTTMsg(client,userdate,msg):
   print('MQTTMsg: ####' )
   payload = msg.payload.decode("utf-8")
   topic = msg.topic.split('/')
-  print(msg.topic, payload)
-  if('command' == topic[-1]):
-    player_id = topic[-2]
-    server = juice.connect('euterpe3', 9090)
-    player_commands[payload](server, player_id)
-  else:
-    [noun,verb] = topic[-1].split('-')
-    actions[noun][verb](msg)
+  print(topic, payload)
+  server = juice.connect('euterpe3', 9090)
+  players = juice.get_players(server)
+  for player in players:
+    print(player)
+    if player['name'] == topic[-1]:
+      juice.pause(server, player['id'])
+      break;
+  server.close()
 
 def onSBMsg(msg):
   print('SBMsg: ####' )
@@ -54,6 +47,11 @@ def onSBMsg(msg):
   last_status[player['name']] = status
   client.publish('squeezebox/players/' + player['name'],
     json.dumps(status))
+  client.publish('squeezebox/display/' + player['name'], 
+    '{}\t{}\t{}'.format(track.get('title','---'),
+                        track.get('artist','---'),
+                        track.get('album','---')).encode('ascii','ignore'),
+    retain=True, qos=1)
 
 if __name__ == '__main__':
   client = mqtt.Client('juice-bridge')
@@ -61,7 +59,7 @@ if __name__ == '__main__':
   client.on_message = onMQTTMsg
   #client.on_log = lambda client,ussrdata,level,buf: print("log:",level,buf)
   client.loop_start()
-  client.subscribe("squeezebox/players-get")
+  client.subscribe("squeezebox/command/#")
   server = juice.connect('euterpe3', 9090)
   players = juice.get_players(server)
   for player in players:
