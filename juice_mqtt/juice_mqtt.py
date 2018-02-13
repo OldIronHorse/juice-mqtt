@@ -46,7 +46,7 @@ def onSBMsg(msg):
   }
   last_status[player['name']] = status
   client.publish('squeezebox/players/' + player['name'],
-    json.dumps(status))
+    json.dumps(status), retain=True, qos=1)
   client.publish('squeezebox/display/' + player['name'], 
     '{}\t{}\t{}'.format(track.get('title','---'),
                         track.get('artist','---'),
